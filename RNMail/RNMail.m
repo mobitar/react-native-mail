@@ -63,18 +63,32 @@ RCT_EXPORT_METHOD(mail:(NSDictionary *)options
             [mail setBccRecipients:bccRecipients];
         }
 
-        if (options[@"attachment"] && options[@"attachment"][@"path"] && options[@"attachment"][@"type"]){
-            NSString *attachmentPath = [RCTConvert NSString:options[@"attachment"][@"path"]];
+        if (options[@"attachment"] && (options[@"attachment"][@"path"] || options[@"attachment"][@"data"]) && options[@"attachment"][@"type"]){
+            
             NSString *attachmentType = [RCTConvert NSString:options[@"attachment"][@"type"]];
             NSString *attachmentName = [RCTConvert NSString:options[@"attachment"][@"name"]];
+        
+            NSString *base64String, *attachmentPath;
+            if(options[@"attachment"][@"data"]) {
+                base64String = [RCTConvert NSString:options[@"attachment"][@"data"]];
+            } else {
+                attachmentPath = [RCTConvert NSString:options[@"attachment"][@"path"]];
+            }
+            
 
             // Set default filename if not specificed
             if (!attachmentName) {
                 attachmentName = [[attachmentPath lastPathComponent] stringByDeletingPathExtension];
             }
-
-            // Get the resource path and read the file using NSData
-            NSData *fileData = [NSData dataWithContentsOfFile:attachmentPath];
+            
+            NSData *fileData;
+            if(base64String) {
+                fileData = [[NSData alloc] initWithBase64EncodedString:base64String options:0];
+            } else {
+                // Get the resource path and read the file using NSData
+                fileData = [NSData dataWithContentsOfFile:attachmentPath];
+            }
+            
 
             // Determine the MIME type
             NSString *mimeType;
