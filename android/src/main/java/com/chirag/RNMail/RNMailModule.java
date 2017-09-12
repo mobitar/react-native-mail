@@ -1,18 +1,34 @@
 package com.chirag.RNMail;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.text.Html;
+import android.util.Base64;
+import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.text.Html;
+import android.text.Spanned;
+import android.util.Base64;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.Callback;
 
+import java.io.FileWriter;
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+
+import java.io.IOException;
 import java.util.List;
 import java.io.File;
 
@@ -51,6 +67,26 @@ public class RNMailModule extends ReactContextBaseJavaModule {
     return strArray;
   }
 
+  private byte[] getBlob(ReadableMap map, String key) {
+    if (map.hasKey(key) && map.getType(key) == ReadableType.String) {
+      String base64 = map.getString(key);
+      if (base64 != null && !base64.isEmpty()) {
+        return Base64.decode(base64, 0);
+      }
+    }
+    return null;
+  }
+
+  private File createTempFile(String filename, String ext) {
+    if (filename != null && ext != null) {
+      try {
+        return File.createTempFile(filename, ext, reactContext.getExternalCacheDir());
+      } catch (IOException e1) {
+      }
+    }
+    return null;
+  }
+
   @ReactMethod
   public void mail(ReadableMap options, Callback callback) {
     Intent i = new Intent(Intent.ACTION_SENDTO);
@@ -86,12 +122,19 @@ public class RNMailModule extends ReactContextBaseJavaModule {
 
     if (options.hasKey("attachment") && !options.isNull("attachment")) {
       ReadableMap attachment = options.getMap("attachment");
-      if (attachment.hasKey("path") && !attachment.isNull("path")) {
+      File file;
+      if(attachment.hasKey("data") && !attachment.isNull("data")) {
+        byte[] blob = getBlob(attachment, "data");
+        file = createTempFile(attachment.getString("name"), attachment.getString("type"));
+        if (blob != null) {
+          file = writeBlob(file, blob);
+        }
+      } else {
         String path = attachment.getString("path");
-        File file = new File(path);
-        Uri p = Uri.fromFile(file);
-        i.putExtra(Intent.EXTRA_STREAM, p);
+        file = new File(path);
       }
+      Uri p = Uri.fromFile(file);
+      i.putExtra(Intent.EXTRA_STREAM, p);
     }
 
     PackageManager manager = reactContext.getPackageManager();
@@ -119,5 +162,26 @@ public class RNMailModule extends ReactContextBaseJavaModule {
         callback.invoke("error");
       }
     }
+  }
+
+  private File writeBlob(File file, byte[] blob) {
+    if (file != null && blob != null) {
+      FileOutputStream fo = null;
+      try {
+        fo = new FileOutputStream(file);
+        fo.write(blob);
+        fo.flush();
+        fo.close();
+        return file;
+      } catch (Exception e) {
+        if (fo != null) {
+          try {
+            fo.close();
+          } catch (Exception e1) {
+          }
+        }
+      }
+    }
+    return null;
   }
 }
