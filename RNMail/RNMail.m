@@ -68,9 +68,13 @@ RCT_EXPORT_METHOD(mail:(NSDictionary *)options
             NSString *attachmentType = [RCTConvert NSString:options[@"attachment"][@"type"]];
             NSString *attachmentName = [RCTConvert NSString:options[@"attachment"][@"name"]];
         
-            NSString *base64String, *attachmentPath;
+            NSString *base64String, *jsonString, *attachmentPath;
             if(options[@"attachment"][@"data"]) {
-                base64String = [RCTConvert NSString:options[@"attachment"][@"data"]];
+                if([attachmentType isEqualToString:@"json"]) {
+                    jsonString = [RCTConvert NSString:options[@"attachment"][@"data"]];
+                } else {
+                    base64String = [RCTConvert NSString:options[@"attachment"][@"data"]];
+                }
             } else {
                 attachmentPath = [RCTConvert NSString:options[@"attachment"][@"path"]];
             }
@@ -83,7 +87,10 @@ RCT_EXPORT_METHOD(mail:(NSDictionary *)options
             
             NSData *fileData;
             if(base64String) {
-                fileData = [[NSData alloc] initWithBase64EncodedString:base64String options:0];
+                fileData = [[NSData alloc] initWithBase64EncodedString:base64String options:NSDataBase64DecodingIgnoreUnknownCharacters];
+            } else if(jsonString) {
+                // JavaScript JSON uses UTF-16
+                fileData = [jsonString dataUsingEncoding:NSUTF16StringEncoding];
             } else {
                 // Get the resource path and read the file using NSData
                 fileData = [NSData dataWithContentsOfFile:attachmentPath];
@@ -120,6 +127,8 @@ RCT_EXPORT_METHOD(mail:(NSDictionary *)options
             } else if ([attachmentType isEqualToString:@"text"]) {
                 mimeType = @"text/*";
             }
+            
+            attachmentName = [NSString stringWithFormat:@"%@.%@", attachmentName, attachmentType];
 
             // Add attachment
             [mail addAttachmentData:fileData mimeType:mimeType fileName:attachmentName];
