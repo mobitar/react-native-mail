@@ -26,3 +26,12 @@ project.xcworkspace
 #
 node_modules/
 npm-debug.log
+
+
+# Android/IntelliJ
+#
+build/
+.idea
+.gradle
+local.properties
+*.iml

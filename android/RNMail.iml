@@ -87,6 +87,8 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/dependency-cache" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-safeguard" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/intermediate-jars" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/javaPrecompile" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/jniLibs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/lint" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/manifests" />
@@ -102,22 +104,22 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 25 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="okhttp-ws-2.4.0" level="project" />
-    <orderEntry type="library" name="library-2.4.0" level="project" />
-    <orderEntry type="library" name="support-annotations-22.2.0" level="project" />
-    <orderEntry type="library" name="okhttp-2.4.0" level="project" />
-    <orderEntry type="library" name="support-v4-22.2.0" level="project" />
-    <orderEntry type="library" name="jsr305-3.0.0" level="project" />
-    <orderEntry type="library" name="jackson-core-2.2.3" level="project" />
-    <orderEntry type="library" name="appcompat-v7-22.2.0" level="project" />
-    <orderEntry type="library" name="fbcore-0.6.1" level="project" />
-    <orderEntry type="library" name="imagepipeline-okhttp-0.6.1" level="project" />
-    <orderEntry type="library" name="react-native-0.11.0" level="project" />
-    <orderEntry type="library" name="android-jsc-r174650" level="project" />
-    <orderEntry type="library" name="imagepipeline-0.6.1" level="project" />
-    <orderEntry type="library" name="fresco-0.6.1" level="project" />
-    <orderEntry type="library" name="bolts-android-1.1.4" level="project" />
-    <orderEntry type="library" name="okio-1.5.0" level="project" />
-    <orderEntry type="library" name="drawee-0.6.1" level="project" />
+    <orderEntry type="library" name="com.parse.bolts:bolts-android:1.1.4@jar" level="project" />
+    <orderEntry type="library" name="com.android.support:support-annotations:22.2.0@jar" level="project" />
+    <orderEntry type="library" name="com.facebook.fresco:fbcore-0.6.1" level="project" />
+    <orderEntry type="library" name="com.facebook.fresco:fresco-0.6.1" level="project" />
+    <orderEntry type="library" name="com.facebook.fresco:imagepipeline-0.6.1" level="project" />
+    <orderEntry type="library" name="com.squareup.okhttp:okhttp:2.4.0@jar" level="project" />
+    <orderEntry type="library" name="com.nineoldandroids:library:2.4.0@jar" level="project" />
+    <orderEntry type="library" name="com.facebook.react:react-native-0.11.0" level="project" />
+    <orderEntry type="library" name="com.android.support:support-v4-22.2.0" level="project" />
+    <orderEntry type="library" name="com.google.code.findbugs:jsr305:3.0.0@jar" level="project" />
+    <orderEntry type="library" name="com.fasterxml.jackson.core:jackson-core:2.2.3@jar" level="project" />
+    <orderEntry type="library" name="com.facebook.fresco:drawee-0.6.1" level="project" />
+    <orderEntry type="library" name="com.squareup.okio:okio:1.5.0@jar" level="project" />
+    <orderEntry type="library" name="com.facebook.fresco:imagepipeline-okhttp-0.6.1" level="project" />
+    <orderEntry type="library" name="org.webkit:android-jsc-r174650" level="project" />
+    <orderEntry type="library" name="com.squareup.okhttp:okhttp-ws:2.4.0@jar" level="project" />
+    <orderEntry type="library" name="com.android.support:appcompat-v7-22.2.0" level="project" />
   </component>
 </module>
