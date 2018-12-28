@@ -16,6 +16,11 @@
     return self;
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+  return YES;
+}
+
 - (dispatch_queue_t)methodQueue
 {
     return dispatch_get_main_queue();
@@ -36,9 +41,9 @@ RCT_EXPORT_METHOD(mail:(NSDictionary *)options
             NSString *subject = [RCTConvert NSString:options[@"subject"]];
             [mail setSubject:subject];
         }
-        
+
         bool *isHTML = NO;
-        
+
         if (options[@"isHTML"]){
             isHTML = YES;
         }
@@ -57,17 +62,17 @@ RCT_EXPORT_METHOD(mail:(NSDictionary *)options
             NSArray *ccRecipients = [RCTConvert NSArray:options[@"ccRecipients"]];
             [mail setCcRecipients:ccRecipients];
         }
-        
+
         if (options[@"bccRecipients"]){
             NSArray *bccRecipients = [RCTConvert NSArray:options[@"bccRecipients"]];
             [mail setBccRecipients:bccRecipients];
         }
 
         if (options[@"attachment"] && (options[@"attachment"][@"path"] || options[@"attachment"][@"data"]) && options[@"attachment"][@"type"]){
-            
+
             NSString *attachmentType = [RCTConvert NSString:options[@"attachment"][@"type"]];
             NSString *attachmentName = [RCTConvert NSString:options[@"attachment"][@"name"]];
-        
+
             NSString *base64String, *jsonString, *attachmentPath;
             if(options[@"attachment"][@"data"]) {
                 if([attachmentType isEqualToString:@"json"]) {
@@ -78,13 +83,13 @@ RCT_EXPORT_METHOD(mail:(NSDictionary *)options
             } else {
                 attachmentPath = [RCTConvert NSString:options[@"attachment"][@"path"]];
             }
-            
+
 
             // Set default filename if not specificed
             if (!attachmentName) {
                 attachmentName = [[attachmentPath lastPathComponent] stringByDeletingPathExtension];
             }
-            
+
             NSData *fileData;
             if(base64String) {
                 fileData = [[NSData alloc] initWithBase64EncodedString:base64String options:NSDataBase64DecodingIgnoreUnknownCharacters];
@@ -95,11 +100,11 @@ RCT_EXPORT_METHOD(mail:(NSDictionary *)options
                 // Get the resource path and read the file using NSData
                 fileData = [NSData dataWithContentsOfFile:attachmentPath];
             }
-            
+
 
             // Determine the MIME type
             NSString *mimeType;
-            
+
             /*
              * Add additional mime types and PR if necessary. Find the list
              * of supported formats at http://www.iana.org/assignments/media-types/media-types.xhtml
@@ -127,7 +132,7 @@ RCT_EXPORT_METHOD(mail:(NSDictionary *)options
             } else if ([attachmentType isEqualToString:@"text"]) {
                 mimeType = @"text/*";
             }
-            
+
             attachmentName = [NSString stringWithFormat:@"%@.%@", attachmentName, attachmentType];
 
             // Add attachment
