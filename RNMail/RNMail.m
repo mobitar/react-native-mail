@@ -26,6 +26,11 @@
     return dispatch_get_main_queue();
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+    return YES;
+}
+
 RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(mail:(NSDictionary *)options
@@ -42,10 +47,10 @@ RCT_EXPORT_METHOD(mail:(NSDictionary *)options
             [mail setSubject:subject];
         }
 
-        bool *isHTML = NO;
+        BOOL isHTML = NO;
 
         if (options[@"isHTML"]){
-            isHTML = YES;
+            isHTML = [options[@"isHTML"] boolValue];
         }
 
         if (options[@"body"]){
@@ -83,7 +88,6 @@ RCT_EXPORT_METHOD(mail:(NSDictionary *)options
             } else {
                 attachmentPath = [RCTConvert NSString:options[@"attachment"][@"path"]];
             }
-
 
             // Set default filename if not specificed
             if (!attachmentName) {
