@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Base64;
+import androidx.core.content.FileProvider;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -32,6 +33,7 @@ import java.io.IOException;
 import java.util.List;
 import java.io.File;
 
+import android.util.Log;
 /**
  * NativeModule that allows JS to open emails sending apps chooser.
  */
@@ -80,7 +82,7 @@ public class RNMailModule extends ReactContextBaseJavaModule {
   private File createTempFile(String filename, String ext) {
     if (filename != null && ext != null) {
       try {
-        return File.createTempFile(filename, ext, reactContext.getExternalCacheDir());
+        return File.createTempFile(filename, ext, reactContext.getCacheDir());
       } catch (IOException e1) {
       }
     }
@@ -123,7 +125,12 @@ public class RNMailModule extends ReactContextBaseJavaModule {
     if (options.hasKey("attachment") && !options.isNull("attachment")) {
       ReadableMap attachment = options.getMap("attachment");
       File file;
-      if(attachment.hasKey("data") && !attachment.isNull("data")) {
+      
+      String provider = reactContext.getApplicationContext().getPackageName() + ".rnmail.provider";
+      List<ResolveInfo> resolvedIntentActivities = reactContext.getPackageManager().queryIntentActivities(i,
+        PackageManager.MATCH_DEFAULT_ONLY);
+
+      if (attachment.hasKey("data") && !attachment.isNull("data")) {
         byte[] blob = getBlob(attachment, "data");
         file = createTempFile(attachment.getString("name"), attachment.getString("type"));
         if (blob != null) {
@@ -133,8 +140,14 @@ public class RNMailModule extends ReactContextBaseJavaModule {
         String path = attachment.getString("path");
         file = new File(path);
       }
-      Uri p = Uri.fromFile(file);
-      i.putExtra(Intent.EXTRA_STREAM, p);
+      Uri uri = FileProvider.getUriForFile(reactContext, provider, file);
+      for (ResolveInfo resolvedIntentInfo : resolvedIntentActivities) {
+        String packageName = resolvedIntentInfo.activityInfo.packageName;
+        reactContext.grantUriPermission(packageName, uri,
+          Intent.FLAG_GRANT_READ_URI_PERMISSION);
+      }
+      i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+      i.putExtra(Intent.EXTRA_STREAM, uri);
     }
 
     PackageManager manager = reactContext.getPackageManager();
