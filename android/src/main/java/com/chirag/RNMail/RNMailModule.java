@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.util.List;
 import java.io.File;
 
-import android.util.Log;
 /**
  * NativeModule that allows JS to open emails sending apps chooser.
  */
